@@ -1,0 +1,120 @@
+{
+	"info": {
+		"name": "Viagem",
+		"_postman_id": "3878c218-1c63-62bb-ab8e-dab8656a848a",
+		"description": "Teste de viagem",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "listar usuarios",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{host}}/apiphp/usuarios",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"apiphp",
+						"usuarios"
+					]
+				},
+				"description": "lista os usuarios"
+			},
+			"response": []
+		},
+		{
+			"name": "inserir usurio",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"apelido\":\"teste\",\"nome\":\"teste\",\"email\":\"teste.silva@gmail.com\",\"senha\":\"teste\"}"
+				},
+				"url": {
+					"raw": "{{host}}/apiphp/usuarios/inserir",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"apiphp",
+						"usuarios",
+						"inserir"
+					]
+				},
+				"description": "insere um novo usuario"
+			},
+			"response": []
+		},
+		{
+			"name": "obter usuario",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{host}}/apiphp/usuarios/2",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"apiphp",
+						"usuarios",
+						"2"
+					]
+				},
+				"description": "retorna o segundo usuario"
+			},
+			"response": []
+		},
+		{
+			"name": "remover usuario",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{host}}/apiphp/usuarios/6",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"apiphp",
+						"usuarios",
+						"6"
+					]
+				},
+				"description": "remove usuario"
+			},
+			"response": []
+		},
+		{
+			"name": "alterar usuario",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"apelido\":\"joca\",\"nome\":\"Jocirlei\",\"email\":\"jocirlei.silva@gmail.com\",\"senha\":\"123\"}"
+				},
+				"url": {
+					"raw": "{{host}}/apiphp/usuarios/2",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"apiphp",
+						"usuarios",
+						"2"
+					]
+				},
+				"description": "altera os dados do usuario 2"
+			},
+			"response": []
+		}
+	]
+}
