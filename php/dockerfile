@@ -1,0 +1,14 @@
+FROM php:7-fpm
+
+RUN apt-get update && apt-get install -y libz-dev libmemcached-dev libjpeg-dev libpng-dev \
+    && pecl install memcached \
+    && docker-php-ext-enable memcached \
+    && docker-php-ext-install -j$(nproc) pdo pdo_mysql mysqli gd \
+    && docker-php-ext-enable pdo pdo_mysql mysqli gd
+
+RUN docker-php-ext-install zip \
+    && docker-php-ext-enable zip
+
+CMD ["php-fpm"]
+
+EXPOSE 9000

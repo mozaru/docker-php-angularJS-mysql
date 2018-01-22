@@ -1,0 +1,29 @@
+<!doctype html>
+<html ng-app="demo">
+	<head>
+		<title>Hello AngularJS</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
+    	<script src="api.js"></script>
+	</head>
+
+	<body>
+		<div ng-controller="ListarUsuarios">
+            <table>
+                <thead>
+                  <tr>
+                    <th>Apelido</th>
+                    <th>Nome</th>
+                    <th>Email</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="u in usuarios">
+                    <td><strong>{{ u.apelido }}</strong></td>
+                    <td>{{ u.nome }}</td>
+                    <td>{{ u.email }}</td>
+                  </tr>
+                </tbody>
+            </table>
+		</div>
+	</body>
+</html>
