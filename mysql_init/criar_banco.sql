@@ -12,6 +12,7 @@ CREATE TABLE usuario (
        apelido varchar(20) not null,
        nome VARCHAR(50) not null,
        email VARCHAR(50) not null,
+       ativo boolean not null default 1,
        senha varchar(40) not null,
        data datetime not null,
        primary key (id)

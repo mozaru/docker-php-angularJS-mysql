@@ -115,6 +115,72 @@
 				"description": "altera os dados do usuario 2"
 			},
 			"response": []
+		},
+		{
+			"name": "ativar usuario",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{host}}/apiphp/usuarios/ativar/1",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"apiphp",
+						"usuarios",
+						"ativar",
+						"1"
+					]
+				},
+				"description": "ativa o usuario"
+			},
+			"response": []
+		},
+		{
+			"name": "desativar usuario",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{host}}/apiphp/usuarios/desativar/1",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"apiphp",
+						"usuarios",
+						"desativar",
+						"1"
+					]
+				},
+				"description": "desativa o usuario"
+			},
+			"response": []
+		},
+		{
+			"name": "resetar senha usuario",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{host}}/apiphp/usuarios/resetar/1",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"apiphp",
+						"usuarios",
+						"resetar",
+						"1"
+					]
+				},
+				"description": "reseta a senha do usuario para 123456"
+			},
+			"response": []
 		}
 	]
 }

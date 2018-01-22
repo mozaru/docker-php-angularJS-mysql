@@ -1,0 +1,84 @@
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,700,300,600,400);
+
+
+.titulo{
+    color: #cfbd6c;
+    font-weight: 600;
+    outline: none;
+}
+.titulo:hover{
+    color: #cfbd6c;
+}
+
+.navbar {
+    padding: 0.5rem 1rem 0.5rem 0rem;
+    background: #203b25;
+}
+
+.btn-default {
+    color: #333;
+    background-color: #fff;
+    border-color: #ccc;
+}
+
+.btn-default:hover {
+    color: #333;
+    background-color: rgb(221, 243, 214);
+    border-color: #ccc;
+}
+
+.btn-default:active, .btn-default.active, .open > .dropdown-toggle.btn-default {
+    color: #333;
+    background-color: rgb(205, 226, 198);
+    border-color: #ccc;
+}
+
+.btn-primary {
+    color: rgb(194, 194, 194);
+    background-color: rgb(38, 61, 28);
+    border-color: rgb(29, 46, 21);
+}
+.btn-primary:hover {
+    color: rgb(194, 194, 194);
+    background-color: rgb(73, 109, 57);
+    border-color: rgb(29, 46, 21);
+}
+
+.page-heading {
+    border-top: 0;
+    padding: 5px 15px;
+    margin-bottom: 20px;
+}
+.border-bottom {
+    border-bottom: 1px solid #e7eaec !important;
+}
+.gray-bg {
+    background-color: #f3f3f4;
+}
+
+.page-heading h2 {
+    color: #666;
+    font-size: 22px;
+    font-weight: 100;
+}
+
+.btn {
+    font-size: 13px;
+    padding: .375rem .75rem;
+}
+
+
+.form-control {
+    font-size: 13px;
+}
+
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+    padding: 5px;
+    line-height: 1.4285;
+    vertical-align: middle;
+    border-top: 1px solid #ddd;
+}
+
+.table{
+    border: 1px solid #ddd;
+}

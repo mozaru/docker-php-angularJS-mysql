@@ -1,0 +1,135 @@
+<div class="container-fluid">
+  <div class="row gray-bg border-bottom page-heading">
+      <h2>Usuarios</h2>
+  </div>
+  <div class="row">
+      <div class="col-md-12">
+          <div class="row">
+              <!-- caixa de pesquisa -->
+              <div class="col-md-9">
+                  <div class="form-group">
+                      <div class="input-group">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text"><span class="fa fa-filter"></span></span>
+                        </div>
+                        <input type="search" id="filtro" ng-model="filtro" class="form-control input-sm" placeholder="Filtrar" autofocus>
+                      </div>
+                  </div>
+              </div>
+              <!-- filtro ativo e inativo -->
+              <div class="col-md-1">
+                  <div class="form-group">
+                      <div class="btn-group btn-group-toggle ng-pristine ng-untouched ng-valid" style="width: 100%" data-toggle="buttons" bs-checkbox-group="">
+                          <label class="btn btn-default active" style="width: 50%" ng-click="alterarfiltro(1)"><input class="btn btn-default ng-pristine ng-valid ng-touched" type="checkbox" value="closed" ng-model="ativos" bs-checkbox=""><i class="fa fa-fw fa-check" style="color: #5cb85c;"></i></label>
+                          <label class="btn btn-default" style="width: 50%" ng-click="alterarfiltro(2)"><input class="btn btn-default ng-pristine ng-untouched ng-valid" type="checkbox" value="opened" ng-model="inativos" bs-checkbox=""><i class="fa fa-fw fa-check" style="color: #ccc;"></i></label>
+                      </div>
+                  </div>
+              </div>
+              <!-- botao de adicionar -->
+              <div class="col-md-2">
+                  <div class="form-group">
+                      <button type="button" class="btn btn-primary btn-sm btn-block" data-toggle="modal" data-target="#modalUsuario" ng-click="novo()">
+                          <span class="fa fa-plus"></span>&nbsp;Nova
+                      </button>
+                  </div>
+              </div>
+          </div>    
+
+          <!-- loader -->
+          <div class="list-spinner" ng-show="loading">
+              <div class="cube1"></div>
+              <div class="cube2"></div>
+          </div>
+
+          <!-- RESULTS -->
+        <div class="table-responsive">
+            <table class="table table-striped table-hover" sort-table sort-init="nome" ng-hide="loading">
+                <thead>
+                    <tr>
+                        <th sort-column predicate="title" type="alpha">Apelido</th>
+                        <th sort-column predicate="title" type="alpha">Nome</th>
+                        <th sort-column predicate="title" type="alpha">Email</th>
+                        <th sort-column predicate="title" type="date">Data Criação</th>
+                        <th style="width: 1%; text-align: center"><label class="fa fa-pencil fw" data-title="Atualizar" bs-tooltip data-title="Alterar Dados"></label></th>
+                        <th style="width: 1%; text-align: center"><label class="fa fa-trash fw" data-title="Excluir" bs-tooltip data-title="Excluir"></label></th>
+                        <th style="width: 1%; text-align: center"><label class="fa fa-toggle-off fw ng-scope" bs-tooltip="" data-title="Ativar / Inativar"></label></th>
+                        <th style="width: 1%; text-align: center"><label class="fa fa-key fw ng-scope" bs-tooltip="" data-title="Resetar Senha"></label></th>
+                    </tr>
+                </thead>
+                <tbody>
+                        <tr ng-repeat="u in usuarios | filter:filtrar | orderBy: 'nome'">
+                          <td>{{u.apelido}}</td>
+                          <td>{{u.nome}}</td>
+                          <td>{{u.email}}</td>
+                          <td>{{u.data}}</td>
+                          <td>
+                              <button class="btn btn-default btn-sm" data-toggle="modal" data-target="#modalUsuario" ng-click="editar(u)">
+                                  <span class="fa fa-pencil fw"></span>
+                              </button>
+                          </td>
+                          <td>
+                              <button class="btn btn-default btn-sm" data-toggle="modal" data-target="#modalUsuario" ng-click="remover(u)">
+                                  <span class="fa fa-trash fw"></span>
+                              </button>
+                          </td>
+                          <td>
+                              <button class="btn btn-default btn-sm" ng-click="ativar(u)" bs-tooltip="Ativar/Desativar" data-title="Ativar/Desativar">
+                                  <span class="fa fa-fw" ng-class="{1: 'fa-toggle-on', 0: 'fa-toggle-off'}[u.ativo]"></span>
+                              </button>
+                          </td>
+                          <td>
+                              <button class="btn btn-default btn-sm" ng-click="resetar(u)" bs-tooltip="Resetar Senha" data-title="Resetar">
+                                  <span class="fa fa-key fw"></span>
+                              </button>
+                          </td>
+                        </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- NO RESULTS -->
+        <div class="no-results" ng-show="!loading && (usuarios | filter: query).length == 0">Nenhum usuario cadastrado!</div>
+    </div>
+</div>
+
+
+<div class="modal" tabindex="-1" role="dialog" id="modalUsuario">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">{{textoacao}} Usuário</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        </div>
+        <form>
+          <div class="modal-body" ng-model="usuario">
+            <fieldset>
+              <!--<legend></legend>-->
+              <div class="form-group row">
+                <label for="apelido" class="col-lg-2 control-label">Apelido</label>
+                <div class="col-lg-5">
+                  <input type="text" class="form-control" id="apelido" ng-model="usuario.apelido" />
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="nome" class="col-lg-2 control-label">Nome</label>
+                <div class="col-lg-8">
+                    <input type="text" class="form-control" id="nome" ng-model="usuario.nome"></input>
+                </div>
+              </div>
+              <div class="form-group row">
+                  <label for="email" class="col-lg-2 control-label">email</label>
+                  <div class="col-lg-10">
+                    <input type="text" class="form-control" id="email" ng-model="usuario.email"></input>
+                  </div>                  
+              </div>              
+              <input type="hidden" ng-model="usuarioId" value="{{usuario.Id}}" />
+            </fieldset>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" id="voltarPopup">Voltar</button>
+            <button type="button" class="btn btn-primary" id="salvarPopup" data-dismiss="modal" ng-click="confirmar()">{{btnconfirmar}}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>

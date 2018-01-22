@@ -10,8 +10,6 @@ date_default_timezone_set('America/Sao_paulo');
 
 $app = new \Slim\App;
 
-
-//usuarios
 $app->get('/usuarios',function (Request $request, Response $response, array $args) 
     {
         $usuario = new usuario();
@@ -53,6 +51,30 @@ $app->post('/usuarios/{id}', function (Request $request, Response $response, arr
         $id = $args['id'];
         $obj = json_decode($request->getBody());
         $obj = $usuario->alterar($id, $obj);
+        echo json_encode($obj);       
+    });
+
+    $app->post('/usuarios/ativar/{id}', function (Request $request, Response $response, array $args) 
+    {
+        $usuario = new usuario();
+        $id = $args['id'];
+        $obj = $usuario->ativar($id);
+        echo json_encode($obj);       
+    });
+
+    $app->post('/usuarios/desativar/{id}', function (Request $request, Response $response, array $args) 
+    {
+        $usuario = new usuario();
+        $id = $args['id'];
+        $obj = $usuario->desativar($id);
+        echo json_encode($obj);       
+    });
+
+    $app->post('/usuarios/resetar/{id}', function (Request $request, Response $response, array $args) 
+    {
+        $usuario = new usuario();
+        $id = $args['id'];
+        $obj = $usuario->resetar($id);
         echo json_encode($obj);       
     });
 

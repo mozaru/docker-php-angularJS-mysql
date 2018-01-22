@@ -10,7 +10,7 @@ use \Psr\Http\Message\ResponseInterface as Response;
       private $username = "operador";
       private $password = "123456";
       private $conn;
-     
+      
       public function preparaSQL($query)
       {
             try{
@@ -25,7 +25,7 @@ use \Psr\Http\Message\ResponseInterface as Response;
       }
       public function listar()
       {
-            $query = "SELECT id, apelido, nome, email, senha, data FROM usuario order by id";
+            $query = "SELECT id, apelido, nome, email, ativo, senha, data FROM usuario order by id";
             $stmt = $this->preparaSQL($query);
             // execute query
             $stmt->execute();
@@ -35,7 +35,7 @@ use \Psr\Http\Message\ResponseInterface as Response;
       }
       public function obter($id)
       {
-            $query = "SELECT id, apelido, nome, email, senha, data FROM usuario where id=:id";
+            $query = "SELECT id, apelido, nome, email, ativo, senha, data FROM usuario where id=:id";
             $stmt = $this->preparaSQL($query);
             $stmt->bindParam("id",$id);
             // execute query
@@ -81,6 +81,38 @@ use \Psr\Http\Message\ResponseInterface as Response;
             $stmt->execute();
             return $obj;
       }
+
+      public function resetar($id)
+      {
+            $query = 'UPDATE usuario set senha=:senha where id=:id';
+            $stmt = $this->preparaSQL($query);
+            // execute query
+            $stmt->bindParam("senha",md5('123456'));
+            $stmt->bindParam("id", $id);
+            $stmt->execute();
+            return $id;
+      }
+
+      public function ativar($id)
+      {
+            $query = 'UPDATE usuario set ativo=1 where id=:id';
+            $stmt = $this->preparaSQL($query);
+            // execute query
+            $stmt->bindParam("id", $id);
+            $stmt->execute();
+            return $id;
+      }
+
+      public function desativar($id)
+      {
+            $query = 'UPDATE usuario set ativo=0 where id=:id';
+            $stmt = $this->preparaSQL($query);
+            // execute query
+            $stmt->bindParam("id", $id);
+            $stmt->execute();
+            return $id;
+      }
+      
 }
   
 

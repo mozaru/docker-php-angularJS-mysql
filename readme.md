@@ -1,7 +1,7 @@
 Este projeto foi elaborado para testar docker + php + mysql + frontend (CSS,HTML5,AngularJS e BootStrap)
 
 baixe tudo
-instale do docker e o docker-compose
+instale o docker e o docker-compose
 
 
 container mysql com o banco de dados de acordo com o script /mysql_ini/criar_banco.sql
@@ -67,6 +67,11 @@ remover um usuario
 
 eu utilizei o postman para realizar os testes e afim de facilitar coloquei o arquivo do postman na raiz para que vc possa importa-lo 
 Viagem.postman_collection.json 
+
+
+foi adiconada a interface web com angular e bootstrap. Alem disso temos mais 3 novos serviços na apiphp, ativar, desativar e resetar senha do usuario. 
+no banco de dados, foi inserido o campo ativo na tabela de usuario.
+
 
 
 

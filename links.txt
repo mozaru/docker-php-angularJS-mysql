@@ -1,0 +1,13 @@
+www.douglaspasqua.com/2016/08/21/autenticacao-em-apis-rest/
+https://medium.com/@fidelissauro/slim-framework-criando-microservices-07-implementando-segurança-básica-com-http-auth-e-proxy-ed6dd6d517f4
+https://scotch.io/tutorials/the-anatomy-of-a-json-web-token
+https://connect2id.com/learn/oauth-2
+https://developer.atlassian.com/cloud/jira/platform/oauth-2-jwt-bearer-token-authorization-grant-type/
+https://tools.ietf.org/html/rfc6749
+https://tools.ietf.org/html/rfc6750
+
+
+https://getbootstrap.com/docs/4.0/getting-started/introduction/
+https://www.tutorialspoint.com/bootstrap/index.htm
+
+https://code.angularjs.org/1.5.11/docs/tutorial
