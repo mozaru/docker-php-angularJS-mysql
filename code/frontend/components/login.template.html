@@ -1,0 +1,220 @@
+<div class="modal" tabindex="-1" role="dialog" id="modalLogin">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Login</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        </div>
+          <div class="modal-body" ng-model="login">
+                <fieldset>
+                    <div class="form-group row justify-content-md-center">
+                        <label for="email" class="col-lg-2 control-label">Email</label>
+                        <div class="col-lg-8">
+                            <input type="text" class="form-control" id="email" ng-model="login.email" />
+                        </div>
+                    </div>
+                    <div class="form-group row justify-content-md-center">
+                        <label for="senha" class="col-lg-2 control-label" style="margin-bottom: 0">Senha</label>
+                        <div class="input-group col-lg-8" id="ctr_senha">
+                                <input type="password" class="form-control" id="senha" ng-model="login.senha"></input>
+                                <div class="input-group-append">
+                                    <span class="btn input-group-text" id="basic-addon2" ng-click="revelarsenha()">
+                                        <i class="fa fa-eye"></i>
+                                    </span>
+                                </div>
+                        </div>
+                        <div class="w-100"></div>
+                        <label class="col-lg-2 control-label"></label>                        
+                        <span ng-click="esquecisenha(login)" class="col-lg-8 link-ajuda">Esqueci a senha?</span>    
+                      </div>
+                </fieldset>
+                <div class="form-group row  justify-content-end">
+                  <div class="form-check  input-group col-lg-5 justify-content-end">
+                      <input tabindex="3" name="lembrar senha" id="lembrarsenha" type="checkbox" ng-model="login.lembrarsenha">
+                      <label class="form-check-label" style="padding: 0 1rem 0 0.1rem" for="lembrarsenha">Lembrar Login</label>
+                  </div>
+                </div>
+                <div class="alert alert-danger animate-show-hide" ng-show='erro!="" && info==""'>
+                  <strong>Erro!</strong> {{erro}} 
+                </div>
+                <div class="info alert-info animate-show-hide" ng-show='info!=""'>
+                  <strong>Info!</strong> {{info}} 
+                </div>               
+                <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" id="voltarPopup">Voltar</button>
+                        <button type="button" class="btn btn-secondary" id="cadastrar"  ng-click="cadastrar(login)">registrar</button>
+                        <button type="button" class="btn btn-primary" id="logar"  ng-click="logar(login)">logar</button>
+                </div>
+          </div>
+      </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="modalRegistrar">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Registrar Usuário</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        </div>
+        <form>
+          <div class="modal-body" ng-model="usuario">
+            <fieldset>
+              <!--<legend></legend>-->
+              <div class="form-group row">
+                <label for="apelido" class="col-lg-2 control-label">Apelido</label>
+                <div class="col-lg-5">
+                  <input type="text" class="form-control" id="apelido" ng-model="usuario.apelido" />
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="nome" class="col-lg-2 control-label">Nome</label>
+                <div class="col-lg-8">
+                    <input type="text" class="form-control" id="nome" ng-model="usuario.nome"></input>
+                </div>
+              </div>
+              <div class="form-group row">
+                  <label for="email" class="col-lg-2 control-label">email</label>
+                  <div class="col-lg-10">
+                    <input type="text" class="form-control" id="email" ng-model="usuario.email"></input>
+                  </div>                  
+              </div>              
+              <div class="form-group row">
+                <label for="senha" class="col-lg-2 control-label">Senha</label>
+                <div class="input-group col-lg-8" id="ctr_senha">
+                        <input type="password" class="form-control" id="senha" ng-model="usuario.senha"></input>
+                        <div class="input-group-append">
+                            <span class="btn input-group-text" id="basic-addon2" ng-click="revelarsenha()">
+                                <i class="fa fa-eye"></i>
+                            </span>
+                        </div>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="senha" class="col-lg-2 control-label">Confirmar</label>
+                <div class="input-group col-lg-8" id="ctr_senha">
+                        <input type="password" class="form-control" id="confirmarsenha" ng-model="usuario.confirmasenha"></input>
+                        <div class="input-group-append">
+                            <span class="btn input-group-text" id="basic-addon2" ng-click="revelarsenha()">
+                                <i class="fa fa-eye"></i>
+                            </span>
+                        </div>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+          <div class="alert alert-danger animate-show-hide" ng-show='erro!="" && info==""'>
+            <strong>Erro!</strong> {{erro}} 
+          </div>
+          <div class="info alert-info animate-show-hide" ng-show='info!=""'>
+            <strong>Info!</strong> {{info}} 
+          </div>  
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" id="voltarPopup">Voltar</button>
+            <button type="button" class="btn btn-primary" id="salvarPopup" ng-click="registrar()">Enviar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="modal" tabindex="-1" role="dialog" id="modalLembrarSenha">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Alterar Senha</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        </div>
+        <form>
+          <div class="modal-body" ng-model="usuario">
+            <fieldset>
+              <div class="form-group row">
+                  <label for="email" class="col-lg-2 control-label">email</label>
+                  <div class="col-lg-10">
+                    <input type="text" class="form-control" id="email" ng-model="usuario.email"></input>
+                  </div>                  
+              </div>              
+              <div class="form-group row">
+                <label for="senha" class="col-lg-2 control-label">Senha</label>
+                <div class="input-group col-lg-8" id="ctr_senha">
+                        <input type="password" class="form-control" id="senha" ng-model="usuario.senha"></input>
+                        <div class="input-group-append">
+                            <span class="btn input-group-text" id="basic-addon2" ng-click="revelarsenha()">
+                                <i class="fa fa-eye"></i>
+                            </span>
+                        </div>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="senha" class="col-lg-2 control-label">Confirmar</label>
+                <div class="input-group col-lg-8" id="ctr_senha">
+                        <input type="password" class="form-control" id="confirmarsenha" ng-model="usuario.confirmasenha"></input>
+                        <div class="input-group-append">
+                            <span class="btn input-group-text" id="basic-addon2" ng-click="revelarsenha()">
+                                <i class="fa fa-eye"></i>
+                            </span>
+                        </div>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+          <div class="alert alert-danger animate-show-hide" ng-show='erro!="" && info==""'>
+            <strong>Erro!</strong> {{erro}} 
+          </div>
+          <div class="info alert-info animate-show-hide" ng-show='info!=""'>
+            <strong>Info!</strong> {{info}} 
+          </div>  
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" id="voltarPopup">Voltar</button>
+            <button type="button" class="btn btn-primary" id="salvarPopup" ng-click="alterarsenha()">Enviar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="modal" tabindex="-1" role="dialog" id="modalReativar">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Reativar Conta</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        </div>
+        <form>
+          <div class="modal-body" ng-model="usuario">
+            <fieldset>
+              <div class="form-group row">
+                  <label for="email" class="col-lg-2 control-label">email</label>
+                  <div class="col-lg-10">
+                    <input type="text" class="form-control" id="email" ng-model="usuario.email"></input>
+                  </div>                  
+              </div>              
+              <div class="form-group row justify-content-md-center">
+                <label for="senha" class="col-lg-2 control-label">Senha</label>
+                <div class="input-group col-lg-8" id="ctr_senha">
+                        <input type="password" class="form-control" id="senha" ng-model="usuario.senha"></input>
+                        <div class="input-group-append">
+                            <span class="btn input-group-text" id="basic-addon2" ng-click="revelarsenha()">
+                                <i class="fa fa-eye"></i>
+                            </span>
+                        </div>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+          <div class="alert alert-danger animate-show-hide" ng-show='erro!="" && info==""'>
+            <strong>Erro!</strong> {{erro}} 
+          </div>
+          <div class="info alert-info animate-show-hide" ng-show='info!=""'>
+            <strong>Info!</strong> {{info}} 
+          </div>  
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" id="voltarPopup">Voltar</button>
+            <button type="button" class="btn btn-primary" id="salvarPopup"  ng-click="reativar()">Enviar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>

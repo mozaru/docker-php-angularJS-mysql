@@ -40,7 +40,12 @@
               <div class="cube1"></div>
               <div class="cube2"></div>
           </div>
-
+          <div class="alert alert-danger animate-show-hide" ng-show='erro!="" && info==""'>
+            <strong>Erro!</strong> {{erro}} 
+          </div>
+          <div class="info alert-info animate-show-hide" ng-show='info!=""'>
+            <strong>Info!</strong> {{info}} 
+          </div>  
           <!-- RESULTS -->
         <div class="table-responsive">
             <table class="table table-striped table-hover" sort-table sort-init="nome" ng-hide="loading">
@@ -50,10 +55,10 @@
                         <th sort-column predicate="title" type="alpha">Nome</th>
                         <th sort-column predicate="title" type="alpha">Email</th>
                         <th sort-column predicate="title" type="date">Data Criação</th>
-                        <th style="width: 1%; text-align: center"><label class="fa fa-pencil fw" data-title="Atualizar" bs-tooltip data-title="Alterar Dados"></label></th>
-                        <th style="width: 1%; text-align: center"><label class="fa fa-trash fw" data-title="Excluir" bs-tooltip data-title="Excluir"></label></th>
-                        <th style="width: 1%; text-align: center"><label class="fa fa-toggle-off fw ng-scope" bs-tooltip="" data-title="Ativar / Inativar"></label></th>
-                        <th style="width: 1%; text-align: center"><label class="fa fa-key fw ng-scope" bs-tooltip="" data-title="Resetar Senha"></label></th>
+                        <th style="width: 1%; text-align: center"><label class="fa fa-pencil fw" data-title="Atualizar" data-toggle="tooltip" title="Alterar Dados"></label></th>
+                        <th style="width: 1%; text-align: center"><label class="fa fa-trash fw" data-title="Excluir" data-toggle="tooltip" title="Excluir"></label></th>
+                        <th style="width: 1%; text-align: center"><label class="fa fa-toggle-off fw ng-scope" data-title="Ativar / Inativar" data-toggle="tooltip" title="Ativar / Inativar"></label></th>
+                        <th style="width: 1%; text-align: center"><label class="fa fa-key fw ng-scope"  data-title="Resetar Senha" data-toggle="tooltip" title="Resetar Senha"></label></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -63,22 +68,22 @@
                           <td>{{u.email}}</td>
                           <td>{{u.data}}</td>
                           <td>
-                              <button class="btn btn-default btn-sm" data-toggle="modal" data-target="#modalUsuario" ng-click="editar(u)">
+                              <button class="btn btn-default btn-sm" data-toggle="modal" data-toggle="tooltip" title="Editar" data-target="#modalUsuario" ng-click="editar(u)">
                                   <span class="fa fa-pencil fw"></span>
                               </button>
                           </td>
                           <td>
-                              <button class="btn btn-default btn-sm" data-toggle="modal" data-target="#modalUsuario" ng-click="remover(u)">
+                              <button class="btn btn-default btn-sm" data-toggle="modal" data-toggle="tooltip" title="Excluir" data-target="#modalUsuario" ng-click="remover(u)">
                                   <span class="fa fa-trash fw"></span>
                               </button>
                           </td>
                           <td>
-                              <button class="btn btn-default btn-sm" ng-click="ativar(u)" bs-tooltip="Ativar/Desativar" data-title="Ativar/Desativar">
+                              <button class="btn btn-default btn-sm" ng-click="ativar(u)" data-toggle="tooltip" title="Ativar/Desativar" data-title="Ativar/Desativar">
                                   <span class="fa fa-fw" ng-class="{1: 'fa-toggle-on', 0: 'fa-toggle-off'}[u.ativo]"></span>
                               </button>
                           </td>
                           <td>
-                              <button class="btn btn-default btn-sm" ng-click="resetar(u)" bs-tooltip="Resetar Senha" data-title="Resetar">
+                              <button class="btn btn-default btn-sm" ng-click="resetar(u)" data-toggle="tooltip" title="Resetar Senha" data-title="Resetar">
                                   <span class="fa fa-key fw"></span>
                               </button>
                           </td>
@@ -125,9 +130,15 @@
               <input type="hidden" ng-model="usuarioId" value="{{usuario.Id}}" />
             </fieldset>
           </div>
+          <div class="alert alert-danger animate-show-hide" ng-show='erro!="" && info==""'>
+            <strong>Erro!</strong> {{erro}} 
+          </div>
+          <div class="info alert-info animate-show-hide" ng-show='info!=""'>
+            <strong>Info!</strong> {{info}} 
+          </div>  
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal" id="voltarPopup">Voltar</button>
-            <button type="button" class="btn btn-primary" id="salvarPopup" data-dismiss="modal" ng-click="confirmar()">{{btnconfirmar}}</button>
+            <button type="button" class="btn btn-primary" id="salvarPopup" ng-click="confirmar()">{{btnconfirmar}}</button>
           </div>
         </form>
       </div>

@@ -9,6 +9,8 @@ angular.
       $scope.ativos = true;
       $scope.inativos = false;
       $scope.filtro = "";
+      $scope.erro="";
+      $scope.info="";
 
       $http.get('/apiphp/usuarios').then(function(response) {
         $scope.usuarios = response.data; 
@@ -34,6 +36,8 @@ angular.
         $scope.btnconfirmar = "Inserir";
         $scope.usuario = { id: 0, apelido: "", nome: "", email: "", senha: "", data: "" };
         $scope.usuarioIdSelecionado = $scope.usuario.Id;
+        $scope.info = "";
+        $scope.status =  0;
       }
   
       $scope.editar = function (usuario) {
@@ -41,6 +45,8 @@ angular.
         $scope.btnconfirmar = "Alterar";
         $scope.usuario = usuario;
         $scope.usuarioIdSelecionado = usuario.id;
+        $scope.info = "";
+        $scope.status =  0;
       }
   
       $scope.remover = function (usuario) {
@@ -49,6 +55,8 @@ angular.
         $scope.btnconfirmar = "Remover";
         $scope.usuario = usuario;
         $scope.usuarioIdSelecionado = usuario.id;
+        $scope.info = "";
+        $scope.status =  0;
         /*
         var confirm = window.confirm("Confirma remover?");
         if(confirm){
@@ -64,16 +72,28 @@ angular.
           var url = usuario.ativo==1?'/apiphp/usuarios/desativar/':'/apiphp/usuarios/ativar/';
           $http({ method: 'post', url: url + usuario.id })
           .then(function (response, status, headers) {
+            $scope.info = response.data.message;
+            $scope.status =  response.data.status;
             $http.get('/apiphp/usuarios').then(function(response) {
               $scope.usuarios = response.data; });
+          })          
+          .catch( function (response, status, headers) {
+            $scope.erro = response.data.message;
+            $scope.status =  response.data.status;
           });
       }
 
       $scope.resetar = function (usuario) {
           $http({ method: 'post', url: '/apiphp/usuarios/resetar/' + usuario.id})
           .then(function (response, status, headers) {
+            $scope.info = response.data.message;
+            $scope.status =  response.data.status;
             $http.get('/apiphp/usuarios').then(function(response) {
               $scope.usuarios = response.data; });
+          })          
+          .catch( function (response, status, headers) {
+            $scope.erro = response.data.message;
+            $scope.status =  response.data.status;
           });
       }
           
@@ -82,24 +102,42 @@ angular.
         {
           $http({ method: 'post', url: '/apiphp/usuarios/inserir', data: $scope.usuario })
           .then(function (response, status, headers) {
+            $scope.info = response.data.message;
+            $scope.status =  response.data.status;
             $http.get('/apiphp/usuarios').then(function(response) {
               $scope.usuarios = response.data; });
+          })          
+          .catch( function (response, status, headers) {
+            $scope.erro = response.data.message;
+            $scope.status =  response.data.status;
           });
         }
         else if ( $scope.btnconfirmar == "Alterar")
         {
           $http({ method: 'post', url: '/apiphp/usuarios/' + $scope.usuarioIdSelecionado, data: $scope.usuario })
           .then(function (response, status, headers) {
+            $scope.info = response.data.message;
+            $scope.status =  response.data.status;
             $http.get('/apiphp/usuarios').then(function(response) {
               $scope.usuarios = response.data; });
+          })          
+          .catch( function (response, status, headers) {
+            $scope.erro = response.data.message;
+            $scope.status =  response.data.status;
           });
         }
         else if ( $scope.btnconfirmar == "Remover")
         {
           $http({ method: 'delete', url: '/apiphp/usuarios/' + $scope.usuarioIdSelecionado })
           .then(function (response, status, headers) {
+            $scope.info = response.data.message;
+            $scope.status =  response.data.status;
             $http.get('/apiphp/usuarios').then(function(response) {
               $scope.usuarios = response.data; });
+          })          
+          .catch( function (response, status, headers) {
+            $scope.erro = response.data.message;
+            $scope.status =  response.data.status;
           });
         }
       }

@@ -1,0 +1,107 @@
+oauth
+
+https://oauth2.thephpleague.com/authorization-server/auth-code-grant/
+https://github.com/chadicus/slim-oauth2
+http://bshaffer.github.io/oauth2-server-php-docs/
+https://imasters.com.br/infra/seguranca/dominando-oauth-2-0/
+http://bshaffer.github.io/oauth2-server-php-docs/cookbook/
+http://bshaffer.github.io/oauth2-server-php-docs/
+
+casos
+
+ 1. maquina para maquina (client credentials grant)
+    ex: job agendado que usa a api. nao requer permissao do usuario
+
+   aplicacao envia uma requisicao POST para o servidor, com os seguintes parametros no corpo
+	grant_type: client_credentials
+        client_id: ID da aplicacao
+        cliente_secret: como a chava da aplicacao (secret key)
+        scope: lista de escopos, separados por espaco
+
+   o servidor responde com um objet JSON, contendo as seguintes propriedades
+        token_type: Bearer
+        expires_in: time de expiracao do access_token (TTL)
+        access_token: JWT ou nao com a chave privada de autorizacao do servidor
+
+        
+ 2. aplicacao confiavel (password credentials grant)
+    ex: seu oauth server com sua aplicacao, sao todos seus logo a aplicacao é confiavel
+
+   aplicacao pede o login e senha do usuario (a sua aplicacao)
+   aplicacao envia uma requisicao POST para o servidor com os seguintes parametos no corpo
+        grant_type: password
+        client_id: ID da aplicacao
+        cliente_secret: como a chava da aplicacao (secret key)
+        scope: lista de escopos, separados por espaco
+        username: login
+        password: password
+
+   o servidor responde com um objet JSON, contendo as seguintes propriedades
+        token_type: Bearer
+        expires_in: time de expiracao do access_token (TTL)
+        access_token: JWT ou nao com a chave privada de autorizacao do servidor
+	refresh_token: dados criptografados usados para pegar um novo access_token, sem precisar de login e senha
+
+3. aplicacao de terceiro (authorization code grant)
+   ex: aplicacao web, querendo usar o facebook (oAuth do facebook)
+       aplicacao de alguem querendo usar a sua api, para acessar recursos de um usuario especifico.
+
+   parte1:
+   aplicacao envia uma requisicao POST para o servidor com os seguintes parametos no corpo
+        response_type: code
+        client_id: ID da aplicacao
+        redirect_uri: parametro opcional, pois no registro da aplicacao, para obter o ID da aplicacao, o redirect default foi setado
+        scope: lista de escopos, separados por espaco
+        state: parametro opcional, mas muito recomendado, ele é repassado no redirect, normalmente o CSRF Token (assim evita ataques de sites cruzados)
+
+   esta requisicao post, gera um redirect para o servidor OAuth que informará para o usuario que a aplicacao web, deseja acessar os recursos definidos no scope.
+   normalmente este abre uma tela de login e senha informando o usuario e esperando ele autorizar ou nao
+   aprovando ou nao, o servidor OAuth faz um redirect para a redirect_URL, com parametros na query string
+        code: codigo de autorizacao
+        state: com o valor enviado no state inicial.
+
+  parte2:
+  aplicacao de posse do codigo de autorizacao, envia uma requisicao POST para o servidor com os seguintes parametos no corpo
+        grant_type: authorization_code
+        client_id: ID da aplicacao
+	cliente_secret: como a chava da aplicacao (secret key)
+        redirect_uri: parametro opcional, pois no registro da aplicacao, para obter o ID da aplicacao, o redirect default foi setado
+        code: codigo de autorizacao (precisa fazer o urldecode($code) pois ela veio na query string)
+
+   o servidor responde com um objet JSON, contendo as seguintes propriedades
+        token_type: Bearer
+        expires_in: time de expiracao do access_token (TTL)
+        access_token: JWT ou nao com a chave privada de autorizacao do servidor
+	refresh_token: dados criptografados usados para pegar um novo access_token, sem precisar de login e senha
+
+4. Aplicativos de Página Única, ou SPA (Implicit grant)
+    ex: aplicacoes que usam muito javascript e nao tem redirects, como gmail, outlook web access
+    aplicacao envia uma requisicao POST para o servidor com os seguintes parametos no corpo
+        response_type: code
+        client_id: ID da aplicacao
+        redirect_uri: parametro opcional, pois no registro da aplicacao, para obter o ID da aplicacao, o redirect default foi setado
+        scope: lista de escopos, separados por espaco
+        state: parametro opcional, mas muito recomendado, ele é repassado no redirect, normalmente o CSRF Token (assim evita ataques de sites cruzados)
+
+    o servidor redireciona para a url do cliente, com os seguintes parametros na query string
+	token_type: Bearer
+        expires_in: time de expiracao do access_token (TTL)
+        access_token: JWT ou nao com a chave privada de autorizacao do servidor
+	state: com o valor enviado no state inicial.
+       
+
+5. refresh token
+      aplicacao de posse do refresh token, envia uma requisicao POST para o servidor com os seguintes parametos no corpo
+        grant_type: refresh_token
+	refresh_token: valor do refresh token
+        client_id: ID da aplicacao
+	cliente_secret: como a chava da aplicacao (secret key)
+        scope: lista de escopos, separados por espaco
+
+   o servidor responde com um objet JSON, contendo as seguintes propriedades
+        token_type: Bearer
+        expires_in: time de expiracao do access_token (TTL)
+        access_token: JWT ou nao com a chave privada de autorizacao do servidor
+	refresh_token: dados criptografados usados para pegar um novo access_token, sem precisar de login e senha
+
+     

@@ -28,6 +28,8 @@ services:
       - PHP_FPM_INSTALL_MYSQLI=true
     volumes:
         - ./code:/code
+        - ./php/php.ini:/usr/local/etc/php/php.ini
+        - ./php/cacert.pem:/etc/ssl/demoCA/cacert.pem
     links:
       - bd
     

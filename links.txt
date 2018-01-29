@@ -11,3 +11,6 @@ https://getbootstrap.com/docs/4.0/getting-started/introduction/
 https://www.tutorialspoint.com/bootstrap/index.htm
 
 https://code.angularjs.org/1.5.11/docs/tutorial
+
+
+https://simpleisbetterthancomplex.com/tutorial/2016/11/15/how-to-implement-a-crud-using-ajax-and-json.html

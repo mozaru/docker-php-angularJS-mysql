@@ -6,8 +6,16 @@
     font-weight: 600;
     outline: none;
 }
+
 .titulo:hover{
     color: #cfbd6c;
+}
+
+.link-ajuda{
+    color: rgb(119, 148, 106);
+    cursor: pointer;
+    font-size: 0.87rem;
+    line-height: 1.5;
 }
 
 .navbar {
@@ -44,6 +52,17 @@
     border-color: rgb(29, 46, 21);
 }
 
+.btn-secondary {
+    color: rgb(194, 194, 194);
+    background-color: rgb(38, 72, 68);
+    border-color: rgb(28, 52, 61);
+}
+.btn-secondary:hover {
+    color: rgb(194, 194, 194);
+    background-color: rgb(78, 112, 98);
+    border-color: rgb(28, 52, 61);
+}
+
 .page-heading {
     border-top: 0;
     padding: 5px 15px;
@@ -63,13 +82,22 @@
 }
 
 .btn {
-    font-size: 13px;
-    padding: .375rem .75rem;
+    padding: .2rem 0.6rem;
 }
 
+.control-label{
+    padding: .2rem .3rem .1rem .3rem;  
+}
 
+.form-check{
+    cursor: pointer;
+}
 .form-control {
-    font-size: 13px;
+    padding: .1rem .3rem;
+}
+
+.form-group{
+    margin-bottom: 0.3rem;
 }
 
 .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
