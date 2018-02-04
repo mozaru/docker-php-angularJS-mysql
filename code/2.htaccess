@@ -1,0 +1,5 @@
+    RewriteEngine on
+    RewriteBase /~mbssi289/
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ apiphp/api.php [QSA,L]

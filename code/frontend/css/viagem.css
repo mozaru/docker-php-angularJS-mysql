@@ -11,6 +11,19 @@
     color: #cfbd6c;
 }
 
+.nav-link{
+    color: #cfbd6c;
+    font-weight: 600;
+    outline: none;
+    cursor: pointer;
+}
+
+.nav-link:hover{
+    color: #cfbd6c;
+    cursor: pointer;
+}
+
+
 .link-ajuda{
     color: rgb(119, 148, 106);
     cursor: pointer;

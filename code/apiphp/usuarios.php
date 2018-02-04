@@ -58,7 +58,7 @@ $app->post('/usuarios/inserir', function (Request $request, Response $response, 
             $ctr = new email();
             $corpo = sprintf("%s,\n\n sua conta foi criada pelo administrador\n%s\nlogin:%s\nsenha:%s\n\nAtt,\nSuporte Viagem",
                         $obj->apelido,
-                        "http://localhost:8080/",
+                        "/",
                         $obj->email,
                         $senha);
             if ($ctr->enviar($obj->email, "Bem Vindo", $corpo))
@@ -183,7 +183,6 @@ $app->post('/usuarios/{id}', function (Request $request, Response $response, arr
    
         if ($l == 1)
         {
-            return $response->write( '{"status":200, "message":"Usuario ' .$email.' desativado com sucesso!"}'); 
             $ctr = new email();
             $corpo = sprintf("%s,\n\n sua senha foi resetada pelo adminsitrador para %s\n\nAtt,\nSuporte Viagem",
                         $obj->apelido,
@@ -196,7 +195,7 @@ $app->post('/usuarios/{id}', function (Request $request, Response $response, arr
             }
         }else{
             $response = $response->withStatus(500);
-            return $response->write( '{"status":501, "message":"usuário ' .$email.' não desativado!"}');
+            return $response->write( '{"status":501, "message":"A senha do usuário ' .$email.' não foi resetada!"}');
         }
     });
 

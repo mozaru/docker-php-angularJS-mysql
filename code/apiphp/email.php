@@ -1,13 +1,14 @@
 <?php
- 
+
  require_once("libs/class.phpmailer.php");
+ require_once('constantes.php');
 
  class email{
-    private $usuario = 'emaillixo21@gmail.com';
-    private $senha   = 'vinteeum';
-    private $host    = 'smtp.gmail.com';
-    private $porta   = 587;
-    private $protocolo = 'tls';
+    private $usuario = _EMAIL_USER_;
+    private $senha   = _EMAIL_PASSWORD_;
+    private $host    = _EMAIL_HOST_;
+    private $porta   = _EMAIL_PORT_;
+    private $protocolo = _EMAIL_PROTOCOL_;
     private $erro     = '';
     
     public function enviar($para, $assunto, $texto)

@@ -15,7 +15,13 @@ $app->post('/login/logar', function (Request $request, Response $response, array
     $bd = new banco();
     $bd->prepara("select id, apelido, nome, senha, ativo from usuario where email=:email");  
     $bd->parametro("email",$obj->email);
-    $resp = $bd->executar()[0];
+    $resp = $bd->executar();
+    if ($bd->temErro())
+    {
+      $response = $response->withStatus(401);
+      return $response->write( '{"status":401, "message":"'.$bd->getErro().'"}');
+    }
+    $resp = $resp[0];
     if ($bd->count() == 0 || $resp->senha != $senha || $resp->ativo == 0) //nao pode logar
     {
       $response = $response->withStatus(401);
@@ -38,7 +44,9 @@ $app->get('/login/lembrarsenha',function (Request $request, Response $response, 
       $bd = new banco();
       $bd->prepara("select apelido, ativo from usuario where email=:email");  
       $bd->parametro("email",$email);
-      $obj = $bd->executar()[0];
+      $obj = $bd->executar();
+      if ($bd->count()>0)
+        $obj = $obj[0];
       if ($bd->count() == 0 || $obj->ativo == 0) //nao pode logar
       {
         $response = $response->withStatus(401);
@@ -52,7 +60,7 @@ $app->get('/login/lembrarsenha',function (Request $request, Response $response, 
             $ctr = new email();
             $corpo = sprintf("%s,\n\n para poder trocar a senha use o link abaixo\n\n%s%s\nAtt,\nSuporte Viagem",
                         $obj->apelido,
-                        "http://localhost:8080/frontend/index.php?op=lembrarsenha&codigo=",
+                        "/frontend/index.php?op=lembrarsenha&codigo=",
                         gerarChave($email,"lembrarsenha"));
             if ($ctr->enviar($email, "Lembrar Senha", $corpo))
                   return $response->write( '{"status":200, "message":"Email Enviado para '.$email.'!"}');
@@ -83,7 +91,7 @@ $app->get('/login/registrar',function (Request $request, Response $response, arr
             $ctr = new email();
             $corpo = sprintf("%s,\n\n para poder registrar, confirme o seu email, usando o link abaixo\n\n%s%s\nAtt,\nSuporte Viagem",
                         "Caro Usuário",
-                        "http://localhost:8080/frontend/index.php?op=registrar&codigo=",
+                        "/frontend/index.php?op=registrar&codigo=",
                         gerarChave($email,"registrar"));
             if ($ctr->enviar($email, "Confirmação de email", $corpo))
                   return $response->write( '{"status":200, "message":"Email Enviado para '.$email.'!"}');
@@ -114,7 +122,7 @@ $app->get('/login/reativar',function (Request $request, Response $response, arra
             $ctr = new email();
             $corpo = sprintf("%s,\n\n para poder raativar sua conta clique no link abaixo\n\n%s%s\nAtt,\nSuporte Viagem",
                         $obj->apelido,
-                        "http://localhost:8080/frontend/index.php?op=reativar&codigo=",
+                        "/frontend/index.php?op=reativar&codigo=",
                         gerarChave($email,"reativar"));
             if ($ctr->enviar($email, "Reativar Conta", $corpo))
                   return $response->write( '{"status":200, "message":"Email Enviado para '.$email.'!"}');

@@ -1,0 +1,33 @@
+<!doctype html>
+<html ng-app="viagem">        
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title page-title>Login</title>        
+        <!-- Favicon -->
+        <link rel="icon" type="image/png" href="images/favicon-32x32.png" sizes="32x32" /> 
+        <link rel="icon" type="image/png" href="images/favicon-16x16.png" sizes="16x16" />
+        <link rel="icon" type="image/png" href="images/favicon-200x200.png" sizes="200x200" />
+
+        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet"/>
+        <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet"/>
+
+        <link href="css/viagem.css" rel="stylesheet"/>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular-cookies.js"></script>
+   
+        <script src="scripts/app.js"></script>
+    
+        <script src="components/login.component.js"></script>
+
+    </head>
+    <body>
+        <div ng-include="'topnavbar.html'"></div>
+        <div ui-view>
+                <comp-login></comp-login>
+        </div>
+    </body>
+</html>

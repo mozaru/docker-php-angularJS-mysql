@@ -4,17 +4,21 @@ angular.
   module('viagem').
   component('compUsuarios', {
     templateUrl: 'components/usuarios.template.html',
-    controller: function ($scope, $http) {
+    controller: function ($scope, $rootScope, $http) {
       $scope.orderProp = 'nome';
       $scope.ativos = true;
       $scope.inativos = false;
       $scope.filtro = "";
       $scope.erro="";
       $scope.info="";
+      $scope.atualizar = function(){
+          $http.get($rootScope.baseapi + '/usuarios').then(function(response) {
+          $scope.usuarios = response.data; });
+      }
+      $rootScope.update = $scope.atualizar;
 
-      $http.get('/apiphp/usuarios').then(function(response) {
-        $scope.usuarios = response.data; 
-      });
+
+      $scope.atualizar();
 
       $scope.filtrar = function (usuario) {
         var resp = (usuario.ativo==1 && $scope.ativos) || (usuario.ativo==0 && $scope.inativos);
@@ -60,7 +64,7 @@ angular.
         /*
         var confirm = window.confirm("Confirma remover?");
         if(confirm){
-        $http({ method: 'delete', url: '/apiphp/usuarios/' + $usuario.id })
+        $http({ method: 'delete', url: $rootScope.baseapi + '/usuarios/' + $usuario.id })
             .then(function (response, status, headers) {
                 $scope.usuario = response;
                 $location.path('/frontend/index.html');
@@ -69,12 +73,12 @@ angular.
       }
 
       $scope.ativar = function (usuario) {
-          var url = usuario.ativo==1?'/apiphp/usuarios/desativar/':'/apiphp/usuarios/ativar/';
+          var url = usuario.ativo==1?$rootScope.baseapi + '/usuarios/desativar/':$rootScope.baseapi + '/usuarios/ativar/';
           $http({ method: 'post', url: url + usuario.id })
           .then(function (response, status, headers) {
             $scope.info = response.data.message;
             $scope.status =  response.data.status;
-            $http.get('/apiphp/usuarios').then(function(response) {
+            $http.get($rootScope.baseapi + '/usuarios').then(function(response) {
               $scope.usuarios = response.data; });
           })          
           .catch( function (response, status, headers) {
@@ -84,11 +88,11 @@ angular.
       }
 
       $scope.resetar = function (usuario) {
-          $http({ method: 'post', url: '/apiphp/usuarios/resetar/' + usuario.id})
+          $http({ method: 'post', url: $rootScope.baseapi + '/usuarios/resetar/' + usuario.id})
           .then(function (response, status, headers) {
             $scope.info = response.data.message;
             $scope.status =  response.data.status;
-            $http.get('/apiphp/usuarios').then(function(response) {
+            $http.get($rootScope.baseapi + '/usuarios').then(function(response) {
               $scope.usuarios = response.data; });
           })          
           .catch( function (response, status, headers) {
@@ -100,12 +104,11 @@ angular.
       $scope.confirmar = function () {
         if ( $scope.btnconfirmar == "Inserir")
         {
-          $http({ method: 'post', url: '/apiphp/usuarios/inserir', data: $scope.usuario })
+          $http({ method: 'post', url: $rootScope.baseapi + '/usuarios/inserir', data: $scope.usuario })
           .then(function (response, status, headers) {
             $scope.info = response.data.message;
             $scope.status =  response.data.status;
-            $http.get('/apiphp/usuarios').then(function(response) {
-              $scope.usuarios = response.data; });
+            $scope.atualizar();
           })          
           .catch( function (response, status, headers) {
             $scope.erro = response.data.message;
@@ -114,12 +117,11 @@ angular.
         }
         else if ( $scope.btnconfirmar == "Alterar")
         {
-          $http({ method: 'post', url: '/apiphp/usuarios/' + $scope.usuarioIdSelecionado, data: $scope.usuario })
+          $http({ method: 'post', url: $rootScope.baseapi + '/usuarios/' + $scope.usuarioIdSelecionado, data: $scope.usuario })
           .then(function (response, status, headers) {
             $scope.info = response.data.message;
             $scope.status =  response.data.status;
-            $http.get('/apiphp/usuarios').then(function(response) {
-              $scope.usuarios = response.data; });
+            $scope.atualizar();
           })          
           .catch( function (response, status, headers) {
             $scope.erro = response.data.message;
@@ -128,12 +130,11 @@ angular.
         }
         else if ( $scope.btnconfirmar == "Remover")
         {
-          $http({ method: 'delete', url: '/apiphp/usuarios/' + $scope.usuarioIdSelecionado })
+          $http({ method: 'delete', url: $rootScope.baseapi + '/usuarios/' + $scope.usuarioIdSelecionado })
           .then(function (response, status, headers) {
             $scope.info = response.data.message;
             $scope.status =  response.data.status;
-            $http.get('/apiphp/usuarios').then(function(response) {
-              $scope.usuarios = response.data; });
+            $scope.atualizar();
           })          
           .catch( function (response, status, headers) {
             $scope.erro = response.data.message;

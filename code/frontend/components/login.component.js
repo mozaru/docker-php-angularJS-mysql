@@ -24,7 +24,7 @@ angular.
   module('viagem').
   component('compLogin', {
     templateUrl: 'components/login.template.html',
-    controller: function ($scope, $http, $cookies, $location) {
+    controller: function ($scope, $rootScope, $http, $cookies, $location) {
       $scope.login = { email: "", senha: "", lembrarsenha: false };
       $scope.usuario = { apelido:"", nome:"", email: "", senha: "", confirmasenha: "", codigo: getUrlParameter('codigo') };
       $scope.login.email = obtervalor($cookies, 'email' , '');
@@ -32,10 +32,11 @@ angular.
       $scope.login.lembrarsenha = obtervalor($cookies, 'lembrarsenha', false) == 'true';
       $scope.redirect = getUrlParameter('url');
       if ($scope.redirect == "" )
-        $scope.redirect = "http://localhost:8080/frontend/usuarios.php";
+        $scope.redirect = "usuarios.html";
       $scope.erro="";
       $scope.info="";
-      $scope.urlbase = "http://localhost:8080/frontend/index.php";
+      $scope.urlbase = "index.html";
+      $rootScope.update = null;
 
       $op = getUrlParameter('op');
       if ($op == "registrar")
@@ -48,7 +49,7 @@ angular.
         $('#modalLogin').modal('show');
       
       $scope.logar = function (login) {
-        var url = '/apiphp/login/logar';
+        var url = $rootScope.baseapi + '/login/logar';
           $http({ method: 'post', url: url, data: login})
           .then(function (response, status, headers) {    
             if (login.lembrarsenha)
@@ -76,7 +77,7 @@ angular.
       }
   
       $scope.esquecisenha = function (login) {
-        var url = '/apiphp/login/lembrarsenha?email='+login.email;
+        var url = $rootScope.baseapi + '/login/lembrarsenha?email='+login.email;
           $http({ method: 'get', url: url})
           .then(function (response, status, headers) {
             $scope.info = response.data.message;
@@ -89,7 +90,7 @@ angular.
       }
 
       $scope.cadastrar = function(login) {
-        var url = '/apiphp/login/registrar?email='+encodeURI(login.email);
+        var url = $rootScope.baseapi + '/login/registrar?email='+encodeURI(login.email);
         $http({ method: 'get', url: url})
         .then(function (response, status, headers) {
           $scope.info = response.data.message;
@@ -102,7 +103,7 @@ angular.
       }
 
       $scope.registrar = function() {
-        $http({ method: 'post', url: '/apiphp/login/registrar', data: $scope.usuario })
+        $http({ method: 'post', url: $rootScope.baseapi + '/login/registrar', data: $scope.usuario })
         .then(function (response, status, headers) {
           $scope.info = response.data.message;
           $scope.status =  response.data.status;
@@ -115,7 +116,7 @@ angular.
       }
 
       $scope.alterarsenha = function() {
-        $http({ method: 'post', url: '/apiphp/login/lembrarsenha', data: $scope.usuario })
+        $http({ method: 'post', url: $rootScope.baseapi + '/login/lembrarsenha', data: $scope.usuario })
         .then(function (response, status, headers) {
           $scope.info = response.data.message;
           $scope.status =  response.data.status;
@@ -128,7 +129,7 @@ angular.
       }
 
       $scope.reativar = function() {
-        $http({ method: 'post', url: '/apiphp/login/reativar', data: $scope.usuario })
+        $http({ method: 'post', url: $rootScope.baseapi + '/login/reativar', data: $scope.usuario })
         .then(function (response, status, headers) {
           $scope.info = response.data.message;
           $scope.status =  response.data.status;

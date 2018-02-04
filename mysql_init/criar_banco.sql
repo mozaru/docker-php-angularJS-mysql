@@ -19,7 +19,7 @@ CREATE TABLE usuario (
 );
 
 insert into usuario (apelido, nome, email, senha, data) values
-    ( 'admin', 'administrador', 'mozar.silva@gmail.com', md5('123'), NOW()),
+    ( 'admin', 'administrador', 'admin.silva@gmail.com', md5('123'), NOW()),
     ( 'mozar', 'Mozar Baptista da Silva', 'mozar.silva@gmail.com', md5('123'), NOW());
 
 commit;
