@@ -50,7 +50,13 @@ angular.
       
       $scope.logar = function (login) {
         var url = $rootScope.baseapi + '/login/logar';
-          $http({ method: 'post', url: url, data: login})
+        var corpo= { "grant_type": "password",
+                     "client_id":"viagem",
+                     "client_secret":"123",
+                     "scope":"admin",
+                     "username":login.email,
+                     "password":login.password};
+          $http({ method: 'post', url: url, data: corpo})
           .then(function (response, status, headers) {    
             if (login.lembrarsenha)
             {
@@ -71,6 +77,7 @@ angular.
             window.location = $scope.redirect;
           })
           .catch( function (response, status, headers) {
+            alert("Erro"+ response.data+status);
             $scope.erro = response.data.message;
             $scope.status =  response.data.status;
           });

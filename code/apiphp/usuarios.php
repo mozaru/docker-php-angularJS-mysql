@@ -9,194 +9,267 @@ use \Psr\Http\Message\ResponseInterface as Response;
 
 
 $app->get('/usuarios',function (Request $request, Response $response, array $args) 
-    {
+{
+    try{
+        controlaAcesso($request);
         $bd = new banco();
         $bd->prepara('select id, apelido, nome, email, ativo, data from usuario order by nome');
-        $response->getBody()->write( json_encode($bd->executar()));
-        return $response;
-    });
+        $data = $bd->executar();
+        $bd->desconectar();
+        if ($bd->temErro())
+            throw new Exception($bd->getErro());
+        else
+            return $response->getBody()->write( json_encode($data));
+    }catch(Exception $e){
+        return $response->withJson( ['status'=>401, 'message'=>$e->getMessage()],401 );
+  } 
+});
+
 $app->get('/usuarios/{id}',function (Request $request, Response $response, array $args) 
-    {
+{
+    try{
+        controlaAcesso($request);
         $bd = new banco();
         $id = $args['id'];
         $bd->prepara('select id, apelido, nome, email, ativo, senha from usuario where id=:id');
         $bd->parametro("id", $id);        
-        $response->getBody()->write( json_encode($bd->executar()));
-        return $response;
-    });
-$app->post('/usuarios/inserir', function (Request $request, Response $response, array $args) 
-    {
-        $obj = json_decode($request->getBody());
-        $bd = new banco();
-        $bd->prepara("select apelido from usuario where email=:email");  
-        $bd->parametro("email",$obj->email);
-        $bd->executar()[0];
-        if ($bd->count() != 0 || strlen($obj->nome)==0 || strlen($obj->apelido)==0 || strlen($obj->email)==0)
-        {
-            $response = $response->withStatus(401);
-            if ($bd->count() != 0)
-                return $response->write( '{"status":401, "message":"Email já cadastrado!"}');
-            else if (strlen($obj->apelido)==0)
-                return $response->write( '{"status":401, "message":"O apelido não pode estar em branco!"}');
-            else if (strlen($obj->nome)==0)
-                return $response->write( '{"status":401, "message":"O nome não pode estar em branco!"}');
-            else if (strlen($obj->email)==0)
-                return $response->write( '{"status":401, "message":"O email não pode estar em branco!"}');
-           else 
-                return $response->write( '{"status":401, "message":"Erro Inexperado!"}');
-        }
+        $data = $bd->executar();
+        $bd->desconectar();
+        if ($bd->temErro())
+            throw new Exception($bd->getErro());
         else
-        {
+            return $response->getBody()->write( json_encode($data));
+    }catch(Exception $e){
+        return $response->withJson( ['status'=>401, 'message'=>$e->getMessage()],401 );
+    } 
+});
+
+$app->post('/usuarios/inserir', function (Request $request, Response $response, array $args) 
+{
+    try{
+        controlaAcesso($request);
+        $obj = json_decode($request->getBody());
+        $bd->prepara("select apelido from usuario where email = :email and id <> :id");
+        $bd->parametro("email",$obj->email);  
+        $bd->parametro("id",$id);
+        $bd->executar();
+        if ($bd->count()!=0)
+            throw new Exception("Email já cadastrado!");
+        else if (strlen($obj->nome)==0)
+            throw new Exception("O nome não pode estar em branco!");
+        else if (strlen($obj['apelido'])==0)
+            throw new Exception("O apelido não pode estar em branco!");
+        else if (strlen($obj['email'])==0)
+            throw new Exception("O email não pode estar em branco!");
+        else{
+            $dt =date('Y-m-d H:i:s');
+            $senha = gerarSenha(); 
+            $hash = md5($senha);
             $bd->prepara('INSERT INTO usuario (apelido, nome, email, senha, data) values (:apelido, :nome, :email, :senha, :data)');
             $bd->parametro("apelido", $obj->apelido);
             $bd->parametro("nome", $obj->nome);
             $bd->parametro("email", $obj->email);
-            $senha = gerarSenha();
-            $bd->parametro("senha",md5($senha));
-            $bd->parametro("data", date('Y-m-d H:i:s'));
-            $l = $bd->executar();
-            $ctr = new email();
-            $corpo = sprintf("%s,\n\n sua conta foi criada pelo administrador\n%s\nlogin:%s\nsenha:%s\n\nAtt,\nSuporte Viagem",
+            $bd->parametro("senha",$hash);
+            $bd->parametro("data", $dt);
+            $data = $bd->executar();
+            bd.desconectar();
+            if ($bd->temErro())
+                throw new Exception($bd->getErro());
+            else if ($bd->count() == 0)
+                throw new Exception('Nao foi possivel inserir os dados do usuario '.$obj->email.'!');
+            else{
+                $ctr = new email();
+                $corpo = sprintf("%s,\n\n sua conta foi criada pelo administrador\n%s\nlogin:%s\nsenha:%s\n\nAtt,\nSuporte Viagem",
                         $obj->apelido,
                         "/",
                         $obj->email,
                         $senha);
-            if ($ctr->enviar($obj->email, "Bem Vindo", $corpo))
-                return $response->write( '{"status":200, "message":"Usuario registrado com sucesso!"}');
-            else{
-                $response = $response->withStatus(501);
-                return $response->write( '{"status":501, "message":"não foi possivel enviar email para '.$obj->email.'"}');
+                if ($ctr->enviar($obj->email, "Bem Vindo", $corpo))
+                    return $response->write( '{"status":200, "message":"Usuario registrado com sucesso!"}');
+                else
+                    throw new Exception('{"status":501, "message":"não foi possivel enviar email para '.$obj->email.'"}');
             }
         }
-    });
+    }catch(Exception $e){
+        return $response->withJson( ['status'=>401, 'message'=>$e->getMessage()],401 );
+    } 
+});
+
 $app->delete('/usuarios/{id}', function (Request $request, Response $response, array $args) 
-    {
+{
+    try{
+        controlaAcesso($request);
         $bd = new banco();
         $id = $args['id'];
         $bd->prepara("select email from usuario where id=:id");  
         $bd->parametro("id",$id);
-        $email = $bd->executar()[0]->email;
-        $bd->prepara('DELETE from usuario where id=:id');
-        $bd->parametro("id",$id);
-        $l = $bd->executar();
-        if ($l == 1)
-            return $response->write( '{"status":200, "message":"Usuario ' .$email.' removido com sucesso!"}'); 
-        else{
-            $response = $response->withStatus(500);
-            return $response->write( '{"status":501, "message":"usuário ' .$email.' não removido!"}');
-        }
-    });
-$app->put('/usuarios/{id}', function (Request $request, Response $response, array $args) 
-    {
-        $obj = json_decode($request->getBody());
+        $resp = $bd->executar();
+        if ($bd->temErro())
+            throw new Exception($bd->getErro());
+        else if ($bd->count() == 0)
+            throw new Exception('Usuario nao encontrado!');
+        else {
+            $email = $resp[0]->email;
+            $bd->prepara('DELETE from usuario where id=:id');
+            $bd->parametro("id",$id);
+            $bd->executar();
+            $bd->desconectar();
+            if ($bd->temErro())
+                throw new Exception($bd->getErro());
+            else if ($bd->count() == 0)
+                throw new Exception('Nao foi possivel remover o usuario '.$email.'!');
+            else
+                return $response->write( '{"status":200, "message":"Usuario ' .$email.' removido com sucesso!"}'); 
+        }   
+    }catch(Exception $e){
+        return $response->withJson( ['status'=>401, 'message'=>$e->getMessage()],401 );
+    } 
+});
+
+
+$app->map(['PUT', 'POST'],'/usuarios/{id}', function (Request $request, Response $response, array $args) 
+{
+    try{
+        controlaAcesso($request);
         $bd = new banco();
         $id = $args['id'];
         $bd->prepara("select email from usuario where id=:id");  
         $bd->parametro("id",$id);
-        $email = $bd->executar()[0]->email;
-        $bd->prepara('UPDATE usuario set apelido=:apelido, nome=:nome, email=:email, senha=:senha where id=:id');
-        $bd->parametro("apelido",$obj->apelido);
-        $bd->parametro("nome",$obj->nome);
-        $bd->parametro("email",$obj->email);
-        $bd->parametro("senha",md5($obj->senha));
-        $bd->parametro("id", $id);
-        $l = $bd->executar();
-        if ($l == 1)
-            return $response->write( '{"status":200, "message":"Usuario ' .$email.' alterado com sucesso!"}'); 
-        else{
-            $response = $response->withStatus(500);
-            return $response->write( '{"status":501, "message":"usuário ' .$email.' não alterado!"}');
+        $resp = $bd->executar();
+        if ($bd->temErro())
+            throw new Exception($bd->getErro());
+        else if ($bd->count() == 0)
+            throw new Exception('Usuario nao encontrado!');
+        else {
+            $obj = json_decode($request->getBody());
+            $bd->prepara("select apelido from usuario where email = :email and id <> :id");
+            $bd->parametro("email",$obj->email);  
+            $bd->parametro("id",$id);
+            $bd->executar();
+            if ($bd->count()!=0)
+                throw new Exception("Email já cadastrado!");
+            else if (strlen($obj->nome)==0)
+                throw new Exception("O nome não pode estar em branco!");
+            else if (strlen($obj['apelido'])==0)
+                throw new Exception("O apelido não pode estar em branco!");
+            else if (strlen($obj['email'])==0)
+                throw new Exception("O email não pode estar em branco!");
+            $hash = md5($obj->senha);
+            $bd->prepara('UPDATE usuario set apelido=:apelido, nome=:nome, senha=:senha, email=:email where id=:id');
+            $bd->parametro("apelido",$obj->apelido);
+            $bd->parametro("nome",$obj->nome);
+            $bd->parametro("senha", $hash);
+            $bd->parametro("email",$obj->email);
+            $bd->parametro("id", $id);
+            $data = $bd->executar();
+            $bd->desconectar();
+            if ($bd->temErro())
+                throw new Exception($bd->getErro());
+            else if ($bd->count() == 0)
+                throw new Exception('Nao foi possivel alterar os dados do usuario '.$obj->email.'!');
+            else
+                return $response->write( '{"status":200, "message":"Usuario '.$obj->email.' alterado com sucesso!"}'); 
         }
-    });
-$app->post('/usuarios/{id}', function (Request $request, Response $response, array $args) 
-    {
-        $obj = json_decode($request->getBody());
+    }catch(Exception $e){
+        return $response->withJson( ['status'=>401, 'message'=>$e->getMessage()],401 );
+    } 
+});
+        
+
+$app->post('/usuarios/ativar/{id}', function (Request $request, Response $response, array $args) 
+{
+    try{
+        controlaAcesso($request);
         $bd = new banco();
         $id = $args['id'];
         $bd->prepara("select email from usuario where id=:id");  
         $bd->parametro("id",$id);
-        $email = $bd->executar()[0]->email;
-        $bd->prepara('UPDATE usuario set apelido=:apelido, nome=:nome, email=:email where id=:id');
-        $bd->parametro("apelido",$obj->apelido);
-        $bd->parametro("nome",$obj->nome);
-        $bd->parametro("email",$obj->email);
-        $bd->parametro("id", $id);
-        $l = $bd->executar();
-        if ($l == 1)
-            return $response->write( '{"status":200, "message":"Usuario '.$email.' alterado com sucesso!"}'); 
-        else{
-            $response = $response->withStatus(500);
-            return $response->write( '{"status":501, "message":"usuário '.$email. ' não alterado!"}');
+        $resp = $bd->executar();
+        if ($bd->temErro())
+            throw new Exception($bd->getErro());
+        else if ($bd->count() == 0)
+            throw new Exception('Usuario nao encontrado!');
+        else {
+            $email = $resp[0]->email;
+            $bd->prepara('UPDATE usuario set ativo=1 where id=:id');
+            $bd->parametro("id", $id);
+            $data = $bd->executar();
+            $bd->desconectar();
+            if ($bd->temErro())
+                throw new Exception($bd->getErro());
+            else if ($bd->count() == 0)
+                throw new Exception('Nao foi possivel ativar o usuario '.+$email.'!');
+            else
+                return $response->write( '{"status":200, "message":"Usuario '.$email.' ativado com sucesso!"}');
         }
-    });
+    }catch(Exception $e){
+        return $response->withJson( ['status'=>401, 'message'=>$e->getMessage()],401 );
+    } 
+});
 
-    $app->post('/usuarios/ativar/{id}', function (Request $request, Response $response, array $args) 
-    {
+$app->post('/usuarios/desativar/{id}', function (Request $request, Response $response, array $args) 
+{
+    try{
+        controlaAcesso($request);
         $bd = new banco();
         $id = $args['id'];
         $bd->prepara("select email from usuario where id=:id");  
         $bd->parametro("id",$id);
-        $email = $bd->executar()[0]->email;
-        $bd->prepara('UPDATE usuario set ativo=1 where id=:id');
-        $bd->parametro("id", $id);
-        $l = $bd->executar();
-        if ($l == 1)
-            return $response->write( '{"status":200, "message":"Usuario ' .$email.' ativado com sucesso!"}'); 
-        else{
-            $response = $response->withStatus(500);
-            return $response->write( '{"status":501, "message":"usuário ' .$email.' não ativado!"}');
+        $resp = $bd->executar();
+        if ($bd->temErro())
+            throw new Exception($bd->getErro());
+        else if ($bd->count() == 0)
+            throw new Exception('Usuario nao encontrado!');
+        else {
+            $email = $resp[0]->email;
+            $bd->prepara('UPDATE usuario set ativo=0 where id=:id');
+            $bd->parametro("id", $id);
+            $data = $bd->executar();
+            $bd->desconectar();
+            if ($bd->temErro())
+                throw new Exception($bd->getErro());
+            else if ($bd->count() == 0)
+                throw new Exception('Nao foi possivel desativar o usuario '.+$email.'!');
+            else
+                return $response->write( '{"status":200, "message":"Usuario '.$email.' desativado com sucesso!"}');
         }
-    });
+    }catch(Exception $e){
+        return $response->withJson( ['status'=>401, 'message'=>$e->getMessage()],401 );
+    } 
+});
 
-    $app->post('/usuarios/desativar/{id}', function (Request $request, Response $response, array $args) 
-    {
+
+$app->post('/usuarios/resetar/{id}', function (Request $request, Response $response, array $args) 
+{
+    try{
+        controlaAcesso($request);
         $bd = new banco();
         $id = $args['id'];
         $bd->prepara("select email from usuario where id=:id");  
         $bd->parametro("id",$id);
-        $email = $bd->executar()[0]->email;
-        $bd->prepara('UPDATE usuario set ativo=0 where id=:id');
-        $bd->parametro("id", $id);
-        $l = $bd->executar();
-        if ($l == 1)
-            return $response->write( '{"status":200, "message":"Usuario ' .$email.' desativado com sucesso!"}'); 
-        else{
-            $response = $response->withStatus(500);
-            return $response->write( '{"status":501, "message":"usuário ' .$email.' não desativado!"}');
+        $resp = $bd->executar();
+        if ($bd->temErro())
+            throw new Exception($bd->getErro());
+        else if ($bd->count() == 0)
+            throw new Exception('Usuario nao encontrado!');
+        else {
+            $email = $resp[0]->email;
+            $hash = md5(gerarSenha());
+            $bd->prepara('UPDATE usuario set senha=:senha where id=:id');
+            $bd->parametro("id", $id);
+            $bd->parametro("senha", $hash);
+            $data = $bd->executar();
+            $bd->desconectar();
+            if ($bd->temErro())
+                throw new Exception($bd->getErro());
+            else if ($bd->count() == 0)
+                throw new Exception('Nao foi possivel resetar a senha do usuario '.+$email.'!');
+            else
+                return $response->write( '{"status":200, "message":"Senha do usuario '.$email.' resetada com sucesso!"}');
         }
-    });
-
-    $app->post('/usuarios/resetar/{id}', function (Request $request, Response $response, array $args) 
-    {
-        $bd = new banco();
-        $id = $args['id'];
-
-        $bd->prepara("select apelido, email from usuario where id=:id");  
-        $bd->parametro("id",$id);
-        $obj = $bd->executar()[0];
-
-        $bd->prepara('UPDATE usuario set senha=:senha where id=:id');
-        $senha = gerarSenha();
-        $bd->parametro("senha",md5($senha));
-        $bd->parametro("id", $id);
-        $l = $bd->executar();
-   
-        if ($l == 1)
-        {
-            $ctr = new email();
-            $corpo = sprintf("%s,\n\n sua senha foi resetada pelo adminsitrador para %s\n\nAtt,\nSuporte Viagem",
-                        $obj->apelido,
-                        $senha);
-            if ($ctr->enviar($obj->email, "Senha Resetada", $corpo))
-                return $response->write( '{"status":200, "message":"A senha do usuario ' .$email.' foi resetada com sucesso!"}'); 
-            else{
-                $response = $response->withStatus(501);
-                return $response->write( '{"status":501, "message":"não foi possivel enviar email para '.$obj->email.'"}');
-            }
-        }else{
-            $response = $response->withStatus(500);
-            return $response->write( '{"status":501, "message":"A senha do usuário ' .$email.' não foi resetada!"}');
-        }
-    });
+    }catch(Exception $e){
+        return $response->withJson( ['status'=>401, 'message'=>$e->getMessage()],401 );
+    } 
+});
 
 ?>

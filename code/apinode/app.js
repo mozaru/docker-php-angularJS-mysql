@@ -10,21 +10,30 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 function execSQLQuery(sqlQry, res){
-    const connection = mysql.createConnection({
-      host     : 'bd',
-      //port     : XXX,
-      user     : 'operador',
-      password : '123456',
-      database : 'viagem'
-    });
-   
-    connection.query(sqlQry, function(error, results, fields){
-        if(error) 
-          res.json(error);
-        else
-          res.json(results);
-        connection.end();
-    });
+    try{
+        const connection = mysql.createConnection({
+        host     : 'bd',
+        //port     : XXX,
+        user     : 'operador',
+        password : '123456',
+        database : 'viagem'
+        });
+    
+        connection.query(sqlQry, function(error, results, fields){
+            if(error) 
+            {
+            res.status(401);
+            res.send('{"status":401, "message":"' + error.message +'"}');
+            }
+            else
+            res.json(results);
+            connection.end();
+        });
+    }catch(err)
+    {
+        res.status(401);
+        res.send('{"status":401, "message":"' + err +'"}');
+    }
 }
 
 app.get('/hello', function (req, res) {
@@ -36,7 +45,7 @@ app.get('/apinode/hello', function (req, res) {
 });
 
 app.get('/usuarios', function (req, res) {
-    execSQLQuery('SELECT * FROM usuario', res)
+    execSQLQuery('select id, apelido, nome, email, ativo, data from usuario order by nome', res)
 });
 
 //inicia o servidor

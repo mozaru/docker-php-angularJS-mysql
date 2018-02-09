@@ -7,36 +7,103 @@ require_once ('bd.php');
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
-  
-$app->post('/login/logar', function (Request $request, Response $response, array $args)
-{
-    $obj = json_decode($request->getBody());
-    $senha = md5($obj->senha);
-    $bd = new banco();
-    $bd->prepara("select id, apelido, nome, senha, ativo from usuario where email=:email");  
-    $bd->parametro("email",$obj->email);
-    $resp = $bd->executar();
-    if ($bd->temErro())
-    {
-      $response = $response->withStatus(401);
-      return $response->write( '{"status":401, "message":"'.$bd->getErro().'"}');
-    }
-    $resp = $resp[0];
-    if ($bd->count() == 0 || $resp->senha != $senha || $resp->ativo == 0) //nao pode logar
-    {
-      $response = $response->withStatus(401);
-      if ($bd->count() == 0 || $resp->senha != $senha)
-            return $response->write( '{"status":401, "message":"Login ou Senha Invalido!"}');
-      else 
-            return $response->write( '{"status":401, "message":"Conta inativa!\nEntre em contato com os administradores para poder reativa-la."}');
-    }
-    else
-    {
-      session_start();
-      $_SESSION['usuario'] = $resp;
-      return  $response->getBody()->write( '{"status": 200, "message":"login efetuado com sucesso"}');
-    }
+$app->post('/login/logar',function (Request $request, Response $response, array $args) 
+{ 
+      try{
+            $obj = json_decode($request->getBody());
+            $senha = md5($obj->password);
+            if (!property_exists($obj,'grant_type') || $obj->grant_type != 'password')
+                  throw new Exception('grant_type diferente de password '.$obj->grant_type."sem");
+            else if (!property_exists($obj,'client_id') || $obj->client_id != 'viagem')
+                  throw new Exception('client_id nao permitido');
+            else if (!property_exists($obj,'client_secret') || $obj->client_secret != '123')
+                  throw new Exception('cliente_secret nao validado');
+            else if (!property_exists($obj, 'scope') || $obj->scope != 'admin')
+                  throw new Exception('scope nao permitido');
+            $bd = new banco();
+            $bd->conectar();
+            $bd->prepara('select id, apelido, nome, email, senha, ativo from usuario where email=:email');
+            $bd->parametro('email',$obj->username);
+            $resp = $bd->executar();
+            $bd->desconectar();
+            if ($bd->temErro())
+                  throw new Exception($bd->getErro());
+            else{
+                  $resp = $resp[0];
+                  if ($bd->count() == 0 || $resp->senha == $senha)
+                        throw new Exception('Login ou Senha Invalido!');
+                  else if ($resp->ativo == 0)
+                        throw new Exception('Conta inativa!\nEntre em contato com os administradores para poder reativa-la.');
+                  else{
+                        $access_token = GerarPayloadJWT($resp,get_client_ip(), True);
+                        $refresh_token = GerarPayloadJWT($resp,get_client_ip(), False);
+                        $jwt = json_decode(sprintf('{ 
+                              "status": 200,
+                              "message": "Login realizado com sucesso",
+                              "token_type": "Bearer",
+                              "expires_in": %s,
+                              "expires_on": %s,
+                              "access_token": "%s",
+                              "refresh_token": "%s"
+                        }',$access_token->duracao,$access_token->exp,JWTEncoder($access_token),JWTEncoder($refresh_token)));
+                        return $response->write(json_encode($jwt));
+                  }
+            }
+      }catch(Exception $e){
+            return $response->withJson( ['status'=>401, 'message'=>$e->getMessage()],401 );
+      } 
 });
+
+$app->post('/login/refreshtoken',function (Request $request, Response $response, array $args) 
+{ 
+      try{
+            $obj = json_decode($request->getBody());
+            if (!property_exists($obj,'grant_type') || $obj->grant_type != 'refresh_token')
+                  throw new Exception('grant_type diferente de refresh_token');
+            else if (!property_exists($obj,'client_id') || $obj->client_id != 'viagem')
+                  throw new Exception('client_id nao permitido');
+            else if (!property_exists($obj,'client_secret') || $obj->client_secret != '123')
+                  throw new Exception('cliente_secret nao validado');
+            else if (!property_exists($obj, 'scope') || $obj->scope != 'admin')
+                  throw new Exception('scope nao permitido');
+            else if (!property_exists($obj,'refresh_token'))
+                  throw new Exception('refresh_token é obrigatório');
+            $refresh_token = $obj->refresh_token;
+            $obj = checarToken($refresh_token, get_client_ip(), "Refresh");
+            $bd = new banco();
+            $bd->conectar();
+            $bd->prepara('select id, apelido, nome, email, senha, ativo from usuario where email=:email');
+            $bd->parametro('email',$obj->email);
+            $resp = $bd->executar();
+            $bd->desconectar();
+            if ($bd->temErro())
+                  throw new Exception($bd->getErro());
+            else{
+                  $resp = $resp[0];
+                  if ($bd->count() == 0)
+                        throw new Exception('Usuario nao encontrado!');
+                  else if ($resp->ativo == 0)
+                        throw new Exception('Conta inativa!\nEntre em contato com os administradores para poder reativa-la.');
+                  else{
+                        $access_token = GerarPayloadJWT($resp,get_client_ip(), True);
+                        $refresh_token = GerarPayloadJWT($resp,get_client_ip(), False);
+                        $jwt = json_decode(sprintf('{ 
+                              "status": 200,
+                              "message": "Refresh Token realizado com sucesso",
+                              "token_type": "Bearer",
+                              "expires_in": %s,
+                              "expires_on": %s,
+                              "access_token": "%s",
+                              "refresh_token": "%s"
+                        }',$access_token->duracao,$access_token->exp,JWTEncoder($access_token),JWTEncoder($refresh_token)));
+                        return $response->write(json_encode($jwt));
+                  }
+            }
+      }catch(Exception $e){
+            return $response->withJson( ['status'=>401, 'message'=>$e->getMessage()],401 );
+      } 
+});
+    
 
 $app->get('/login/lembrarsenha',function (Request $request, Response $response, array $args) 
 {     
@@ -254,5 +321,48 @@ $app->post('/login/reativar',function (Request $request, Response $response, arr
       }
 });
 
+$app->post('/login/hs256',function (Request $request, Response $response, array $args) 
+{
+      try{
+            $obj = json_decode($request->getBody());
+            if (!property_exists($obj,'texto'))
+                  throw new Exception("faltou o campo texto no corpo");
+            $texto = $obj->texto;
+            $msg = hs256($texto);
+            return $response->write('{"status":200, "message":"'.$msg.'"}');
+      }catch(Exception $e){
+            return $response->withJson( ['status'=>401, 'message'=>$e->getMessage()],401 );
+      } 
+});
+
+$app->post('/login/jwt',function (Request $request, Response $response, array $args) 
+{
+      try{
+            $obj = json_decode($request->getBody());
+            $msg = JWTEncoder($obj);  
+            return $response->write('{"status":200, "message":"'.json_encode($msg).'"}');     
+      }catch(Exception $e){
+            return $response->withJson( ['status'=>401, 'message'=>$e->getMessage()],401 );
+      } 
+});
+ 
+$app->post('/login/jwt/valida',function (Request $request, Response $response, array $args) 
+{
+      $obj = null;
+      $jwt = null;
+      try{
+            $req = json_decode($request->getBody());
+            $vet = explode('.',$req->token);
+            $jwt = json_decode(sprintf('{"header": %s, "payload": %s}',
+                  fromBase64($vet[0]),fromBase64($vet[1]) ));
+            $obj = checarToken($req->token,get_client_ip(), $req->tipo);
+            return $response->getBody()->write( sprintf('{"status":200, "jwt":%s, "payload":%s}'
+                  ,json_encode($jwt),json_encode($obj) ));  
+      }catch(Exception $e){
+            $response = $response->withStatus(401);
+            return $response->getBody()->write(sprintf('{"status":401, "message":"%s", "jwt":%s, "payload":%s}',
+                   $e->getmessage(),json_encode($jwt),json_encode($obj)));
+      }
+});
 
 ?>
