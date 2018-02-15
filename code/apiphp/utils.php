@@ -148,9 +148,9 @@ function checarToken($token, $iporigem, $tipo = _OAUTH_TIPO_TOKEN_DEFAULT_, $per
         $obj = JWTDecoder($token);
         /*if ($iporigem != $obj->iss)
             throw new Exception("Origem invalida!");
-        else */if (!property_exists($obj,'tipo') || $obj->tipo != $tipo)
+        else */if (property_exists($obj,'tipo') && $obj->tipo != $tipo)
             throw new Exception("Tipo de token incompativel");
-        else if ((!property_exists($obj, 'perfil') || $obj->perfil != $perfil) && $tipo==_OAUTH_TIPO_TOKEN_ACESSO_)
+        else if (property_exists($obj, 'perfil') && $obj->perfil != $perfil && $tipo==_OAUTH_TIPO_TOKEN_ACESSO_)
             throw new Exception("Este usuario nao possui autorizacao para usar este recurso");
         else if (!property_exists($obj, 'exp'))
             throw new Exception("Token nao possui o tempo de expiracao 'exp'");

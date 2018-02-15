@@ -132,8 +132,7 @@ def alterar(id):
             elif len(obj['email'])==0:
                 raise Exception("O email não pode estar em branco!")
             else:
-                hash = hashlib.md5(obj['senha'].encode('utf-8')).hexdigest()
-                bd.prepara("UPDATE usuario set apelido=%s, nome=%s, email=%s, senha=%s where id=%s", (obj['apelido'],obj['nome'],obj['email'],hash, id))
+                bd.prepara("UPDATE usuario set apelido=%s, nome=%s, email=%s where id=%s", (obj['apelido'],obj['nome'],obj['email'], id))
                 data = bd.executar()
                 bd.desconectar()
                 if bd.temErro():

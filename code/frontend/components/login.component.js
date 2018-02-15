@@ -55,7 +55,7 @@ angular.
                      "client_secret":"123",
                      "scope":"admin",
                      "username":login.email,
-                     "password":login.password};
+                     "password":login.senha};
           $http({ method: 'post', url: url, data: corpo})
           .then(function (response, status, headers) {    
             if (login.lembrarsenha)

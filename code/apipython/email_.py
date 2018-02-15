@@ -1,8 +1,6 @@
 import smtplib
 import constantes
-# Import the email modules we'll need
-#from email.MIMEMultipart import MIMEMultipart
-#from email.MIMEText import MIMEText
+from email.mime.text import MIMEText
 
 class email(object):
     __usuario       = constantes._EMAIL_USER_
@@ -12,26 +10,23 @@ class email(object):
     __protocolo     = constantes._EMAIL_PROTOCOL_
     __erro          = ''
     
-    def temErro():
+    def temErro(self):
         return self.__erro != '' and self.__erro!= None
 
-    def getErro():
+    def getErro(self):
         return self.__erro
 
-    def enviar(para, assunto, texto):
+    def enviar(self, para, assunto, texto):
         try:
-            self.__erro = ''
-            #msg = MIMEMultipart()
-            #msg['From'] = self.__usuario
-            #msg['To'] = para
-            #msg['Subject'] = assunto
-            
-            #msg.attach(MIMEText(texto, 'plain'))
-            
-            server = smtplib.SMTP(__host, self.__porta)
+            self.__erro = ''  
+            server = smtplib.SMTP(self.__host, self.__porta)
             server.starttls()
             server.login(self.__usuario, self.__senha)
-            server.sendmail(self.__usuario, para, texto)
+            msg = MIMEText(texto)
+            msg['From'] = self.__usuario
+            msg['To'] = para
+            msg['Subject'] = assunto          
+            server.sendmail(self.__usuario, para, msg.as_string())
             server.quit()
             return True
         except Exception as e:

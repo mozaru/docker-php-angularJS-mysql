@@ -41,6 +41,7 @@ angular.
         $scope.usuario = { id: 0, apelido: "", nome: "", email: "", senha: "", data: "" };
         $scope.usuarioIdSelecionado = $scope.usuario.Id;
         $scope.info = "";
+        $scope.erro =  "";
         $scope.status =  0;
       }
   
@@ -50,6 +51,7 @@ angular.
         $scope.usuario = usuario;
         $scope.usuarioIdSelecionado = usuario.id;
         $scope.info = "";
+        $scope.erro =  "";
         $scope.status =  0;
       }
   
@@ -60,6 +62,7 @@ angular.
         $scope.usuario = usuario;
         $scope.usuarioIdSelecionado = usuario.id;
         $scope.info = "";
+        $scope.erro =  "";
         $scope.status =  0;
         /*
         var confirm = window.confirm("Confirma remover?");

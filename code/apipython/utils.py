@@ -2,7 +2,7 @@ import json
 from datetime import datetime, timedelta, date
 from random import randint
 import urllib.request as req
-from Crypto.Cipher import AES
+from Crypto.Cipher import AES, blockalgo
 from Crypto import Random
 import base64
 import hashlib
@@ -20,12 +20,15 @@ def json_handler(show_time=True):
     return decorated
 
 def fnEncrypt(text):
-    aes = AES.new(constantes._OAUTH_CHAVE_, AES.MODE_EBC , Random.new().read(32))
+    text = text + '\0' * (AES.block_size - len(text) % AES.block_size)
+    #AES.MODE_EBC é igual a 1  por isso o 1 nas chamada
+    aes = AES.new(constantes._OAUTH_CHAVE_, 1  , Random.new().read(AES.block_size))
     return base64.b64encode(aes.encrypt(text))
 
 def fnDecrypt(text):
-    aes = AES.new(constantes._OAUTH_CHAVE_, AES.MODE_EBC , Random.new().read(32))
-    return aes.decrypt(base64.b64decode(text))
+    #AES.MODE_EBC é igual a 1  por isso o 1 nas chamada
+    aes = AES.new(constantes._OAUTH_CHAVE_, 1 , Random.new().read(AES.block_size))
+    return aes.decrypt(base64.b64decode(text)).decode("utf-8").strip('\0')
 
 def mySQLtoJSON(data):
     return json.dumps(data, default=json_handler(True))
@@ -40,14 +43,14 @@ def gerarSenha(qtd = 8):
 
 def gerarChave(email, motivo):
     data = datetime.utcnow() + timedelta(hours=constantes._OAUTH_CHAVES_VALIDADE_)
-    texto = '{"email":"%s", "data":%s, "motivo":"%s"}' % (email, data.strftime('%F %T'), motivo)
+    texto = '{"email":"%s", "data":"%s", "motivo":"%s"}' % (email, data.strftime('%F %T'), motivo)
     return req.pathname2url(fnEncrypt(texto))
 
 def obterChave(texto):
     tempo = datetime.utcnow()
-    obj = json.load(fnDecrypt(texto))
-    delta = tempo - datetime.strptime(obj['data'], '%Y-%m-%d %H:%M:%S').total_seconds()
-    obj["expirado"] = 1 if delta >0 else 0  #python operador ternario ex: (time()-$obj->data)>0?1:0;
+    obj = json.loads(fnDecrypt(texto))
+    delta = (tempo - datetime.strptime(obj['data'], '%Y-%m-%d %H:%M:%S')).total_seconds()
+    obj["expirado"] = delta >0#1 if delta >0 else 0  #python operador ternario ex: (time()-$obj->data)>0?1:0;
     obj["tempo"] = delta
     return obj
 
@@ -97,7 +100,7 @@ def GerarPayloadJWT(usuario, iporigem, AccessToken = True):
         'tipo':constantes._OAUTH_TIPO_TOKEN_ACESSO_ if AccessToken else constantes._OAUTH_TIPO_TOKEN_REFRESH_,
         'duracao':delta.total_seconds(),
         'email':usuario['email'],
-        'prefil':constantes._OAUTH_PERFIL_PADRAO_, #todo: pegar o perfil real no banco
+        'perfil':constantes._OAUTH_PERFIL_PADRAO_, #todo: pegar o perfil real no banco
         'apelido':usuario['apelido']
     }
     return payload

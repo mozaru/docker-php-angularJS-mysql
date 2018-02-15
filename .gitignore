@@ -1,3 +1,7 @@
 code/apiphp/constantes.php
 code/apinode/node_modules
 code/apinode/package-lock.json
+
+code/apipython/constantes.py
+code/apipython/__pycache__
+
